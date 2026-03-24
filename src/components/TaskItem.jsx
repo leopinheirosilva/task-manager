@@ -50,6 +50,7 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
         >
           <TrashIcon className="text-[#9A9C9F]" />
         </Button>
+        
         {/* botão ver detalhes */}
         <a href="#" className="transition hover:opacity-75">
           <DetailsIcon />

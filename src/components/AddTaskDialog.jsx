@@ -1,6 +1,6 @@
 import "./AddTaskDialog.css";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
 import { v4 } from "uuid";
@@ -13,10 +13,19 @@ import TimeSelect from "./TimeSelect";
 const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   // states
   const [title, setTitle] = useState();
-  const [description, setDescription] = useState();
   const [time, setTime] = useState();
+  const [description, setDescription] = useState();
 
   const nodeRef = useRef();
+
+  // reseta os Inputs quando o dialog é fechado
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setTime("");
+      setDescription("");
+    }
+  }, [isOpen]);
 
   return (
     <div>
