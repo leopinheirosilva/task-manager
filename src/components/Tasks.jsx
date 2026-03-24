@@ -64,6 +64,12 @@ const Tasks = () => {
     toast.success("Tarefa removida com sucesso!"); // adiciona um toast da lib sonner
   };
 
+  // função para adicionar tarefa
+  const handleAddTask = (task) => {
+    setTasks([...tasks, task])
+    toast.success("Tarefa adicionada com sucesso!")
+  }
+
   return (
     <div className="w-full space-y-6 px-8 py-16">
       {/* cabeçalho e botões */}
@@ -85,6 +91,7 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={addTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
+            handleSubmit={handleAddTask}
           />
         </div>
       </div>

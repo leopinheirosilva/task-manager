@@ -1,15 +1,21 @@
 import "./AddTaskDialog.css";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
+import { v4 } from "uuid";
 
 import Button from "./Button";
 import Input from "./Input";
 import TimeSelect from "./TimeSelect";
 
 /* eslint-disable react/prop-types */
-const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
+const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
+  // states
+  const [title, setTitle] = useState();
+  const [description, setDescription] = useState();
+  const [time, setTime] = useState();
+
   const nodeRef = useRef();
 
   return (
@@ -26,8 +32,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
         <div>
           {createPortal(
             <div
-              ref={nodeRef}
               className="fixed bottom-0 left-0 top-0 flex h-screen w-screen items-center justify-center backdrop-blur"
+              ref={nodeRef}
             >
               <div className="w-[336px] rounded-xl bg-white p-5 text-center shadow">
                 <h2 className="text-xl font-semibold text-[#35383E]">
@@ -41,15 +47,21 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     placeholder="Título da tarefa"
                     label="Título"
                     id="tilte"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
                   />
 
-                  <TimeSelect />
+                  <TimeSelect
+                    value={time}
+                    onChange={(event) => setTime(event.target.value)}
+                  />
 
-                  <Input placeholder="Horário" label="Horário" id="time" />
                   <Input
                     placeholder="Descreva a tarefa"
                     label="Descrição"
                     id="description"
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
                   />
                   <div className="flex justify-center gap-3">
                     <Button
@@ -60,7 +72,20 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     >
                       Cancelar
                     </Button>
-                    <Button size="large" className="w-full">
+                    <Button
+                      className="w-full"
+                      size="large"
+                      onClick={() => {
+                        handleSubmit({
+                          id: v4(),
+                          title,
+                          time,
+                          description,
+                          status: "not_started",
+                        });
+                        handleDialogClose();
+                      }}
+                    >
                       Salvar
                     </Button>
                   </div>
