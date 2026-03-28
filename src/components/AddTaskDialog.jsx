@@ -12,17 +12,29 @@ import TimeSelect from "./TimeSelect";
 /* eslint-disable react/prop-types */
 const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   // states
-  const [title, setTitle] = useState();
-  const [time, setTime] = useState();
-  const [description, setDescription] = useState();
+  const [title, setTitle] = useState("");
+  const [time, setTime] = useState("");
+  const [description, setDescription] = useState("");
 
   const nodeRef = useRef();
+
+  // função para adicionar tarefa quando o botão de salvar é clicado
+  const handleSaveClick = () => {
+    handleSubmit({
+      id: v4(),
+      title,
+      time,
+      description,
+      status: "not_started",
+    });
+    handleDialogClose();
+  };
 
   // reseta os Inputs quando o dialog é fechado
   useEffect(() => {
     if (!isOpen) {
       setTitle("");
-      setTime("");
+      setTime("morning");
       setDescription("");
     }
   }, [isOpen]);
@@ -84,16 +96,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     <Button
                       className="w-full"
                       size="large"
-                      onClick={() => {
-                        handleSubmit({
-                          id: v4(),
-                          title,
-                          time,
-                          description,
-                          status: "not_started",
-                        });
-                        handleDialogClose();
-                      }}
+                      onClick={handleSaveClick}
                     >
                       Salvar
                     </Button>

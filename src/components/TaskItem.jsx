@@ -27,9 +27,9 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
           className={`relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-opacity-100 ${getStatusClasses()}`}
         >
           <input
+            className="absolute h-full cursor-pointer opacity-0"
             type="checkbox"
             checked={task.status == "done"}
-            className="absolute h-full cursor-pointer opacity-0"
             onChange={() => handleCheckboxClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
           />
           {task.status == "done" && <CheckIcon />}
