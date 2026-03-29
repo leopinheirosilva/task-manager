@@ -15,11 +15,31 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
   const [description, setDescription] = useState("");
+  const [errors, setErrors] = useState([]);
 
   const nodeRef = useRef();
 
   // função para adicionar tarefa quando o botão de salvar é clicado
   const handleSaveClick = () => {
+    // validação de campos do formulário
+    const newErrors = [];
+    if (!title.trim()) {
+      newErrors.push({
+        inputField: "title",
+        message: "O título é obrigatório!",
+      });
+    }
+    if (!description.trim()) {
+      newErrors.push({
+        inputField: "description",
+        message: "A descrição é obrigatória!",
+      });
+    }
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     handleSubmit({
       id: v4(),
       title,
@@ -29,6 +49,12 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
     });
     handleDialogClose();
   };
+
+  // mensagens de erro
+  const titleError = errors.find((error) => error.inputField == "title");
+  const descriptionError = errors.find(
+    (error) => error.inputField == "description"
+  );
 
   // reseta os Inputs quando o dialog é fechado
   useEffect(() => {
@@ -64,26 +90,33 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                   Insira as informações abaixo
                 </p>
                 <div className="flex flex-col space-y-4">
+                  {/* input de título */}
                   <Input
                     placeholder="Título da tarefa"
                     label="Título"
                     id="tilte"
                     value={title}
                     onChange={(event) => setTitle(event.target.value)}
+                    error={titleError}
                   />
 
-                  <TimeSelect
-                    value={time}
-                    onChange={(event) => setTime(event.target.value)}
-                  />
-
+                  {/* input de descrição */}
                   <Input
                     placeholder="Descreva a tarefa"
                     label="Descrição"
                     id="description"
                     value={description}
                     onChange={(event) => setDescription(event.target.value)}
+                    error={descriptionError}
                   />
+
+                  {/* input de horário */}
+                  <TimeSelect
+                    value={time}
+                    onChange={(event) => setTime(event.target.value)}
+                  />
+
+                  {/* botões cancelar e salvar */}
                   <div className="flex justify-center gap-3">
                     <Button
                       className="w-full"

@@ -1,7 +1,7 @@
 import InputLabel from "./InputLabel";
 
 /* eslint-disable react/prop-types */
-const Input = ({ label, ...rest }) => {
+const Input = ({ label, error, ...rest }) => {
   return (
     <div className="flex flex-col space-y-1 text-left">
       <InputLabel htmlFor={rest.id}>{label}</InputLabel>
@@ -9,6 +9,9 @@ const Input = ({ label, ...rest }) => {
         className="rounded-lg border border-solid border-[#ECECEC] px-4 py-3 outline-[#00ADB5] placeholder:text-sm placeholder:text-[#9A9C9F]"
         {...rest}
       />
+      {error && (
+        <span className="text-left text-xs text-red-500">{error.message}</span> // mensagem de erro
+      )}
     </div>
   );
 };
