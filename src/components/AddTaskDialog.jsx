@@ -12,17 +12,21 @@ import TimeSelect from "./TimeSelect";
 /* eslint-disable react/prop-types */
 const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   // states
-  const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
-  const [description, setDescription] = useState("");
   const [errors, setErrors] = useState([]);
 
+  // refs
   const nodeRef = useRef();
+  const titleRef = useRef();
+  const descriptionRef = useRef();
 
   // função para adicionar tarefa quando o botão de salvar é clicado
   const handleSaveClick = () => {
-    // validação de campos do formulário
     const newErrors = [];
+    const title = titleRef.current.value;
+    const description = descriptionRef.current.value;
+
+    // validação de campos do formulário
     if (!title.trim()) {
       newErrors.push({
         inputField: "title",
@@ -57,12 +61,10 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
     (error) => error.inputField == "description"
   );
 
-  // reseta os Inputs quando o dialog é fechado
+  // reseta o Input time quando o dialog é fechado
   useEffect(() => {
     if (!isOpen) {
-      setTitle("");
       setTime("morning");
-      setDescription("");
     }
   }, [isOpen]);
 
@@ -96,9 +98,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     placeholder="Título da tarefa"
                     label="Título"
                     id="tilte"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                    error={titleError}
+                    ref={titleRef}
+                    errorMessage={titleError?.message}
                   />
 
                   {/* input de descrição */}
@@ -106,9 +107,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     placeholder="Descreva a tarefa"
                     label="Descrição"
                     id="description"
-                    value={description}
-                    onChange={(event) => setDescription(event.target.value)}
-                    error={descriptionError}
+                    ref={descriptionRef}
+                    errorMessage={descriptionError?.message}
                   />
 
                   {/* input de horário */}
