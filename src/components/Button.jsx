@@ -1,41 +1,40 @@
+import { tv } from "tailwind-variants";
+
 /* eslint-disable react/prop-types */
 const Button = ({
   children,
-  variant = "primary",
+  color = "primary",
   size = "small",
   className,
   ...rest
 }) => {
-  // criação de variantes de estilos para os botões
-  const getVariantClasses = () => {
-    if (variant == "primary") {
-      return "bg-brand-primary text-white";
-    }
-
-    if (variant == "secondary") {
-      return "bg-brand-light-gray text-brand-dark-blue";
-    }
-
-    if (variant == "ghost") {
-      return "bg-transparent text-brand-dark-gray";
-    }
-  };
-
-  // criação de variantes de tamanho para os botões
-  const getSizeClasses = () => {
-    if (size == "small") {
-      return " py-1 text-xs";
-    }
-
-    if (size == "large") {
-      return " py-2 text-sm";
-    }
-  };
+  // criação de variáveis utiliznado o Tailwind Variants
+  const button = tv({
+    base: "flex items-center justify-center gap-2 rounded-md px-3 font-semibold transition hover:opacity-75", //estilos em comum entre todas as variantes
+    variants: {
+      // criação de variantes de estilos para os botões
+      color: {
+        primary: "bg-brand-primary text-white",
+        secondary: "bg-brand-light-gray text-brand-dark-blue",
+        ghost: "bg-transparent text-brand-dark-gray",
+      },
+      // criação de variantes de tamanho para os botões
+      size: {
+        small: "py-1 text-xs",
+        large: "py-2 text-sm",
+      },
+      // variantes padrão
+      defaultVariants: {
+        color: "primary",
+        size: "small",
+      },
+    },
+  });
 
   return (
     <button
       {...rest} // prop que irá armazenar todos os atributos declarados dentro do componente (ex: onClick, onChange, autosave...)
-      className={`flex items-center justify-center gap-2 rounded-md px-3 font-semibold transition hover:opacity-75 ${getVariantClasses()} ${getSizeClasses()} ${className}`}
+      className={button({ color, size, className })}
     >
       {children}
     </button>

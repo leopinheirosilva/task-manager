@@ -45,7 +45,7 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
       <div className="flex items-center gap-2">
         {/* botão para remover tarefa */}
         <Button
-          variant="ghost"
+          color="ghost"
           onClick={() => handleDeleteClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
         >
           <TrashIcon className="text-brand-text-gray" />

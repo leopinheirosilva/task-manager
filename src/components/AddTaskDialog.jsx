@@ -122,7 +122,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     <Button
                       className="w-full"
                       size="large"
-                      variant="secondary"
+                      color="secondary"
                       onClick={handleDialogClose}
                     >
                       Cancelar
