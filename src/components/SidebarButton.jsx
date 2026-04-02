@@ -1,20 +1,20 @@
-/* eslint-disable react/prop-types */
-const SidebarButton = ({ children, variant }) => {
-  // criação de variantes de estilos para os botões e ícones
-  const getVariantClasses = () => {
-    if (variant == "default") {
-      return "text-brand-dark-blue";
-    }
+import { tv } from "tailwind-variants";
 
-    if (variant == "selected") {
-      return "bg-brand-primary bg-opacity-15 text-brand-primary";
-    }
-  };
+/* eslint-disable react/prop-types */
+const SidebarButton = ({ children, color }) => {
+  // criação de variantes de estilos para os botões e ícones
+  const sidebar = tv({
+    base: "flex items-center gap-2 rounded-lg px-6 py-3",
+    variants: {
+      color: {
+        default: "text-brand-dark-blue",
+        selected: "bg-brand-primary bg-opacity-15 text-brand-primary",
+      },
+    },
+  });
+
   return (
-    <a
-      href="#"
-      className={`flex items-center gap-2 rounded-lg px-6 py-3 ${getVariantClasses()}`}
-    >
+    <a href="#" className={sidebar({ color })}>
       {children}
     </a>
   );
