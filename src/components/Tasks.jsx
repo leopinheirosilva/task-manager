@@ -66,16 +66,16 @@ const Tasks = () => {
 
   // função para adicionar tarefa
   const handleAddTask = (task) => {
-    setTasks([...tasks, task])
-    toast.success("Tarefa adicionada com sucesso!")
-  }
+    setTasks([...tasks, task]);
+    toast.success("Tarefa adicionada com sucesso!");
+  };
 
   return (
     <div className="w-full space-y-6 px-8 py-16">
       {/* cabeçalho e botões */}
       <div className="flex w-full justify-between">
         <div>
-          <span className="text-xs font-semibold text-[#00ADB5]">
+          <span className="text-brand-primary text-xs font-semibold">
             Minhas Tarefas
           </span>
           <h2 className="text-xl font-semibold">Minhas Tarefas</h2>

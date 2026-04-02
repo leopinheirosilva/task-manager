@@ -132,6 +132,6 @@
     }
 
     body {
-        background-color: #f8f8f8;
+        @apply bg-brand-background;
     }
 }

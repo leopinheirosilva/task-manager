@@ -6,15 +6,15 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
   // variação de estilo segundo o status da tarefa
   const getStatusClasses = () => {
     if (task.status == "done") {
-      return "bg-[#00ADB5] text-[#002C2E]";
+      return "bg-brand-primary text-brand-dark-blue";
     }
 
     if (task.status == "in_progress") {
-      return "bg-[#FFAA04] text-[#7F5502]";
+      return "bg-brand-process text-brand-process";
     }
 
     if (task.status == "not_started") {
-      return "bg-[#35383E] bg-opacity-5 text-[#35383E]";
+      return "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue";
     }
   };
   return (
@@ -48,9 +48,9 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
           variant="ghost"
           onClick={() => handleDeleteClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
         >
-          <TrashIcon className="text-[#9A9C9F]" />
+          <TrashIcon className="text-brand-text-gray" />
         </Button>
-        
+
         {/* botão ver detalhes */}
         <a href="#" className="transition hover:opacity-75">
           <DetailsIcon />
