@@ -41,7 +41,7 @@ const Tasks = () => {
       }
       // lógica para atualizar o status da tarefa
       if (task.status == "not_started") {
-        toast.success("Tarefa iniciada!!");
+        toast.success("Tarefa iniciada!!"); // adiciona um toast da lib sonner
         return { ...task, status: "in_progress" };
       }
       if (task.status == "in_progress") {
@@ -61,7 +61,7 @@ const Tasks = () => {
   const handleDeleteClick = (taskId) => {
     const newTasks = tasks.filter((task) => task.id != taskId);
     setTasks(newTasks);
-    toast.success("Tarefa removida com sucesso!"); // adiciona um toast da lib sonner
+    toast.success("Tarefa removida com sucesso!");
   };
 
   // função para adicionar tarefa
@@ -75,7 +75,7 @@ const Tasks = () => {
       {/* cabeçalho e botões */}
       <div className="flex w-full justify-between">
         <div>
-          <span className="text-brand-primary text-xs font-semibold">
+          <span className="text-xs font-semibold text-brand-primary">
             Minhas Tarefas
           </span>
           <h2 className="text-xl font-semibold">Minhas Tarefas</h2>

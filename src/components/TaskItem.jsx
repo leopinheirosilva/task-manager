@@ -1,4 +1,5 @@
-/* eslint-disable react/prop-types */
+import PropTypes from "prop-types";
+
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from "../assets/icons";
 import Button from "./Button";
 
@@ -17,6 +18,7 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
       return "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue";
     }
   };
+
   return (
     <div
       className={`bg-op flex justify-between gap-2 rounded-lg bg-opacity-10 px-4 py-3 text-sm transition ${getStatusClasses()}`}
@@ -58,6 +60,18 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
       </div>
     </div>
   );
+};
+
+TaskItem.propTypes = {
+  task: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    time: PropTypes.oneOf(["morning", "afternoon", "night"]).isRequired,
+    status: PropTypes.oneOf(["done", "in_progress", "not_started"]).isRequired,
+  }),
+  handleCheckboxClick: PropTypes.func.isRequired,
+  handleDeleteClick: PropTypes.func.isRequired,
 };
 
 export default TaskItem;

@@ -1,8 +1,8 @@
+import PropTypes from "prop-types";
 import { tv } from "tailwind-variants";
 
-/* eslint-disable react/prop-types */
 const SidebarButton = ({ children, color }) => {
-  // criação de variantes de estilos para os botões e ícones
+  // criação de variantes de estilos para os botões
   const sidebar = tv({
     base: "flex items-center gap-2 rounded-lg px-6 py-3",
     variants: {
@@ -18,6 +18,11 @@ const SidebarButton = ({ children, color }) => {
       {children}
     </a>
   );
+};
+
+SidebarButton.propTypes = {
+  children: PropTypes.node.isRequired,
+  color: PropTypes.oneOf(["default","selected"]),
 };
 
 export default SidebarButton;

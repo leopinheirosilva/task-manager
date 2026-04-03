@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import { tv } from "tailwind-variants";
 
-/* eslint-disable react/prop-types */
 const Button = ({
   children,
   color = "primary",
@@ -8,11 +8,11 @@ const Button = ({
   className,
   ...rest
 }) => {
-  // criação de variáveis utiliznado o Tailwind Variants
+  // criação de variáveis utilizando o Tailwind Variants
   const button = tv({
     base: "flex items-center justify-center gap-2 rounded-md px-3 font-semibold transition hover:opacity-75", //estilos em comum entre todas as variantes
     variants: {
-      // criação de variantes de estilos para os botões
+      // criação de variantes de cor para os botões
       color: {
         primary: "bg-brand-primary text-white",
         secondary: "bg-brand-light-gray text-brand-dark-blue",
@@ -33,12 +33,19 @@ const Button = ({
 
   return (
     <button
-      {...rest} // prop que irá armazenar todos os atributos declarados dentro do componente (ex: onClick, onChange, autosave...)
       className={button({ color, size, className })}
+      {...rest} // prop que irá armazenar todos os atributos declarados dentro do componente (ex: onClick, onChange, autosave...)
     >
       {children}
     </button>
   );
+};
+
+Button.propTypes = {
+  children: PropTypes.node.isRequired,
+  color: PropTypes.oneOf(["primary", "ghost", "secondary"]),
+  size: PropTypes.oneOf(["small", "large"]),
+  className: PropTypes.string,
 };
 
 export default Button;

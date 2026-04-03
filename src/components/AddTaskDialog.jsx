@@ -1,5 +1,6 @@
 import "./AddTaskDialog.css";
 
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
@@ -9,7 +10,6 @@ import Button from "./Button";
 import Input from "./Input";
 import TimeSelect from "./TimeSelect";
 
-/* eslint-disable react/prop-types */
 const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   // states
   const [time, setTime] = useState("");
@@ -45,6 +45,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
       return;
     }
 
+    // adiciona a tarefa
     handleSubmit({
       id: v4(),
       title,
@@ -52,6 +53,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
       description,
       status: "not_started",
     });
+
     handleDialogClose();
   };
 
@@ -61,7 +63,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
     (error) => error.inputField == "description"
   );
 
-  // reseta o Input time quando o dialog é fechado
+  // reseta o Input Time quando o dialog é fechado
   useEffect(() => {
     if (!isOpen) {
       setTime("morning");
@@ -86,10 +88,10 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
               ref={nodeRef}
             >
               <div className="w-[336px] rounded-xl bg-white p-5 text-center shadow">
-                <h2 className="text-brand-dark-blue text-xl font-semibold">
+                <h2 className="text-xl font-semibold text-brand-dark-blue">
                   Nova Tarefa
                 </h2>
-                <p className="text-brand-text-gray mb-4 mt-1 text-sm">
+                <p className="mb-4 mt-1 text-sm text-brand-text-gray">
                   Insira as informações abaixo
                 </p>
                 <div className="flex flex-col space-y-4">
@@ -144,6 +146,12 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
       </CSSTransition>
     </div>
   );
+};
+
+AddTaskDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleDialogClose: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default AddTaskDialog;
