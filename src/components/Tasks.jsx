@@ -18,6 +18,7 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
 
+  // API
   useEffect(() => {
     const fetchTasks = async () => {
       // pegar os dados da API
@@ -77,7 +78,17 @@ const Tasks = () => {
   };
 
   // função para adicionar tarefa
-  const handleAddTask = (task) => {
+  const handleAddTask = async (task) => {
+    // chama a api para salvar a tarefa
+    const response = await fetch("http://localhost:3000/tasks", {
+      method: "POST",
+      body: JSON.stringify(task),
+    });
+    if (!response.ok) {
+      return toast.error(
+        "Erro ao adicionar a tarefa! Por favor, tente novamente"
+      );
+    }
     setTasks([...tasks, task]);
     toast.success("Tarefa adicionada com sucesso!");
   };
