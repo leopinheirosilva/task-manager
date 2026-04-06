@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -8,7 +8,6 @@ import {
   SunIcon,
   TrashIcon,
 } from "../assets/icons";
-import TASKS from "../constants/tasks";
 import AddTaskDialog from "./AddTaskDialog";
 import Button from "./Button";
 import TaskItem from "./TaskItem";
@@ -16,8 +15,21 @@ import TasksSeparator from "./TasksSeparator";
 
 const Tasks = () => {
   // states
-  const [tasks, setTasks] = useState(TASKS);
+  const [tasks, setTasks] = useState([]);
   const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      // pegar os dados da API
+      const response = await fetch("http://localhost:3000/tasks", {
+        method: "GET",
+      });
+      const tasks = await response.json();
+      // autaliza o state "tasks"
+      setTasks(tasks);
+    };
+    fetchTasks();
+  }, []);
 
   // filtra todas as tarefas com o time igual à "morning"
   const morningTasks = tasks.filter((task) => task.time == "morning");
