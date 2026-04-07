@@ -70,15 +70,8 @@ const Tasks = () => {
     setTasks(newTasks);
   };
 
-  // função para deletar tarefa
-  const handleDeleteClick = async (taskId) => {
-    // chama a api para deletar a tarefa
-    const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      toast.error("Erro ao deletar a tarefa! Por favor, tente novamente");
-    }
+  // lógica para deleção de tarefas
+  const onDeleteTaskSuccess = (taskId) => {
     const newTasks = tasks.filter((task) => task.id != taskId);
     setTasks(newTasks);
     toast.success("Tarefa removida com sucesso!");
@@ -135,7 +128,7 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              handleDeleteClick={handleDeleteClick} // prop do componente taskItem
+              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
             />
           ))}
         </div>
@@ -147,7 +140,7 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              handleDeleteClick={handleDeleteClick} // prop do componente taskItem
+              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
             />
           ))}
         </div>
@@ -159,7 +152,7 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              handleDeleteClick={handleDeleteClick} // prop do componente taskItem
+              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
             />
           ))}
         </div>

@@ -1,9 +1,30 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from "../assets/icons";
 import Button from "./Button";
 
-const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
+const TaskItem = ({ task, handleCheckboxClick, onDeleteSuccess }) => {
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
+
+  // função para deletar tarefa
+  const handleDeleteClick = async () => {
+    setDeleteIsLoading(true);
+    // chama a api para deletar a tarefa
+    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      setDeleteIsLoading(false);
+      return toast.error(
+        "Erro ao deletar a tarefa! Por favor, tente novamente"
+      );
+    }
+    onDeleteSuccess(task.id);
+    setDeleteIsLoading(false);
+  };
+
   // variação de estilo segundo o status da tarefa
   const getStatusClasses = () => {
     if (task.status == "done") {
@@ -49,8 +70,13 @@ const TaskItem = ({ task, handleCheckboxClick, handleDeleteClick }) => {
         <Button
           color="ghost"
           onClick={() => handleDeleteClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
+          disabled={deleteIsLoading}
         >
-          <TrashIcon className="text-brand-text-gray" />
+          {deleteIsLoading ? (
+            <LoaderIcon className="animate-spin text-brand-text-gray" />
+          ) : (
+            <TrashIcon className="text-brand-text-gray" />
+          )}
         </Button>
 
         {/* botão ver detalhes */}
@@ -71,7 +97,7 @@ TaskItem.propTypes = {
     status: PropTypes.oneOf(["done", "in_progress", "not_started"]).isRequired,
   }),
   handleCheckboxClick: PropTypes.func.isRequired,
-  handleDeleteClick: PropTypes.func.isRequired,
+  onDeleteSuccess: PropTypes.func.isRequired,
 };
 
 export default TaskItem;
