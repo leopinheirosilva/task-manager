@@ -111,6 +111,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
                     id="tilte"
                     ref={titleRef}
                     errorMessage={titleError?.message}
+                    disabled={isLoading}
                   />
 
                   {/* input de descrição */}
@@ -120,12 +121,14 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
                     id="description"
                     ref={descriptionRef}
                     errorMessage={descriptionError?.message}
+                    disabled={isLoading}
                   />
 
                   {/* input de horário */}
                   <TimeSelect
                     value={time}
                     onChange={(event) => setTime(event.target.value)}
+                    disabled={isLoading}
                   />
 
                   <div className="flex justify-center gap-3">
