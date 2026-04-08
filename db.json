@@ -8,13 +8,6 @@
       "status": "done"
     },
     {
-      "id": "2",
-      "title": "Ler livro",
-      "description": "Ler o livro de Matemática",
-      "time": "morning",
-      "status": "done"
-    },
-    {
       "id": "3",
       "title": "Treinar",
       "description": "Treinar para a competição de natação",
@@ -40,6 +33,13 @@
       "title": "Meditar",
       "description": "Meditar por 10 minutos",
       "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": "27f96abf-23e5-4875-a8e2-4ae887de0da1",
+      "title": "asdfa",
+      "time": "morning",
+      "description": "fasdfasd",
       "status": "not_started"
     }
   ]

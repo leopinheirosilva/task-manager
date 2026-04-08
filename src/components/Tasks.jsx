@@ -18,7 +18,7 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
 
-  // API
+  // chamada da API
   useEffect(() => {
     const fetchTasks = async () => {
       // pegar os dados da API
@@ -40,11 +40,6 @@ const Tasks = () => {
 
   // filtra todas as tarefas com o time igual à "night"
   const nightTasks = tasks.filter((task) => task.time == "night");
-
-  // função para fechar a janela de Nova Tarefa
-  const handleDialogClose = () => {
-    setaddTaskDialogIsOpen(false);
-  };
 
   // função para alterar o status da checkbox
   const handleCheckboxClick = (taskId) => {
@@ -77,22 +72,17 @@ const Tasks = () => {
     toast.success("Tarefa removida com sucesso!");
   };
 
-  // função para adicionar tarefa
-  const handleAddTask = async (task) => {
-    // chama a api para salvar a tarefa
-    const response = await fetch("http://localhost:3000/tasks", {
-      method: "POST",
-      body: JSON.stringify(task),
-    });
-    if (!response.ok) {
-      return toast.error(
-        "Erro ao adicionar a tarefa! Por favor, tente novamente"
-      );
-    }
+  // lógica para adicionar tarefa
+  const onSubmitTaskSuccess = (task) => {
     setTasks([...tasks, task]);
     toast.success("Tarefa adicionada com sucesso!");
-  };
+  }
 
+  // função para fechar a janela de Nova Tarefa
+  const handleDialogClose = () => {
+    setaddTaskDialogIsOpen(false);
+  };
+ 
   return (
     <div className="w-full space-y-6 px-8 py-16">
       {/* cabeçalho e botões */}
@@ -114,7 +104,7 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={addTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
-            handleSubmit={handleAddTask}
+            onSubmitSuccess={onSubmitTaskSuccess} 
           />
         </div>
       </div>
@@ -127,8 +117,8 @@ const Tasks = () => {
             <TaskItem
               key={task.id}
               task={task}
-              handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
+              handleCheckboxClick={handleCheckboxClick} 
+              onDeleteSuccess={onDeleteTaskSuccess} 
             />
           ))}
         </div>
@@ -139,8 +129,8 @@ const Tasks = () => {
             <TaskItem
               key={task.id}
               task={task}
-              handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
+              handleCheckboxClick={handleCheckboxClick}
+              onDeleteSuccess={onDeleteTaskSuccess} 
             />
           ))}
         </div>
@@ -151,8 +141,8 @@ const Tasks = () => {
             <TaskItem
               key={task.id}
               task={task}
-              handleCheckboxClick={handleCheckboxClick} // prop do componente TaskItem
-              onDeleteSuccess={onDeleteTaskSuccess} // prop do componente taskItem
+              handleCheckboxClick={handleCheckboxClick}
+              onDeleteSuccess={onDeleteTaskSuccess} 
             />
           ))}
         </div>

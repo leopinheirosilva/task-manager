@@ -4,16 +4,19 @@ import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
+import { toast } from "sonner";
 import { v4 } from "uuid";
 
+import { LoaderIcon } from "../assets/icons";
 import Button from "./Button";
 import Input from "./Input";
 import TimeSelect from "./TimeSelect";
 
-const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
+const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
   // states
   const [time, setTime] = useState("");
   const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // refs
   const nodeRef = useRef();
@@ -21,7 +24,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
   const descriptionRef = useRef();
 
   // função para adicionar tarefa quando o botão de salvar é clicado
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
+    setIsLoading(true);
     const newErrors = [];
     const title = titleRef.current.value;
     const description = descriptionRef.current.value;
@@ -42,18 +46,23 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
     setErrors(newErrors);
 
     if (newErrors.length > 0) {
-      return;
+      return setIsLoading(false);
     }
 
-    // adiciona a tarefa
-    handleSubmit({
-      id: v4(),
-      title,
-      time,
-      description,
-      status: "not_started",
+    const task = { id: v4(), title, time, description, status: "not_started" };
+    // chama a api para salvar a tarefa
+    const response = await fetch("http://localhost:3000/tasks", {
+      method: "POST",
+      body: JSON.stringify(task),
     });
-
+    if (!response.ok) {
+      setIsLoading(false);
+      return toast.error(
+        "Erro ao adicionar a tarefa! Por favor, tente novamente"
+      );
+    }
+    onSubmitSuccess(task);
+    setIsLoading(false);
     handleDialogClose();
   };
 
@@ -119,8 +128,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     onChange={(event) => setTime(event.target.value)}
                   />
 
-                  {/* botões cancelar e salvar */}
                   <div className="flex justify-center gap-3">
+                    {/* botão cancelar */}
                     <Button
                       className="w-full"
                       size="large"
@@ -129,12 +138,18 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
                     >
                       Cancelar
                     </Button>
+                    {/* botão salvar */}
                     <Button
                       className="w-full"
                       size="large"
                       onClick={handleSaveClick}
+                      disabled={isLoading}
                     >
-                      Salvar
+                      {isLoading ? (
+                        <LoaderIcon className="animate-spin" />
+                      ) : (
+                        <p>Salvar</p>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -151,7 +166,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, handleSubmit }) => {
 AddTaskDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   handleDialogClose: PropTypes.func.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
+  onSubmitSuccess: PropTypes.func.isRequired,
 };
 
 export default AddTaskDialog;

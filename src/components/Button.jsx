@@ -23,17 +23,21 @@ const Button = ({
         small: "py-1 text-xs",
         large: "py-2 text-sm",
       },
-      // variantes padrão
-      defaultVariants: {
-        color: "primary",
-        size: "small",
+      // vairante para quando o botão está desabilitado (em processo de loading)
+      disabled: {
+        true: "cursor-not-allowed opacity-50 hover:opacity-50",
       },
+    },
+    // variantes padrão
+    defaultVariants: {
+      color: "primary",
+      size: "small",
     },
   });
 
   return (
     <button
-      className={button({ color, size, className })}
+      className={button({ color, size, disabled: rest.disabled, className })}
       {...rest} // prop que irá armazenar todos os atributos declarados dentro do componente (ex: onClick, onChange, autosave...)
     >
       {children}
@@ -45,6 +49,7 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
   color: PropTypes.oneOf(["primary", "ghost", "secondary"]),
   size: PropTypes.oneOf(["small", "large"]),
+  disabled: PropTypes.oneOf(["true"]),
   className: PropTypes.string,
 };
 
