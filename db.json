@@ -34,20 +34,6 @@
       "description": "Meditar por 10 minutos",
       "time": "night",
       "status": "not_started"
-    },
-    {
-      "id": "843e2e39-41f4-459c-a22e-ede9254f35d9",
-      "title": "asdfasd",
-      "time": "morning",
-      "description": "fasdfasdf",
-      "status": "not_started"
-    },
-    {
-      "id": "d1dd3729-a48f-4c2f-8ddc-26dce5a7b1c8",
-      "title": "adfasdf",
-      "time": "morning",
-      "description": "dafasdf",
-      "status": "not_started"
     }
   ]
 }
