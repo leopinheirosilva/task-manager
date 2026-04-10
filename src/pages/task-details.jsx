@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { ArrowLeftIcon, ChevronRight, TrashIcon } from "../assets/icons";
-import Sidebar from "../components/Sidebar";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import Sidebar from "../components/Sidebar";
 import TimeSelect from "../components/TimeSelect";
 
 const TaskDetailsPage = () => {
