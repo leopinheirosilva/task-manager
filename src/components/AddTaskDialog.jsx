@@ -93,7 +93,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
         <div>
           {createPortal(
             <div
-              className="fixed bottom-0 left-0 top-0 flex h-screen w-screen items-center justify-center backdrop-blur"
+              className="fixed bottom-0 left-0 top-0 flex h-screen w-screen items-center justify-center bg-brand-dark-blue bg-opacity-50"
               ref={nodeRef}
             >
               <div className="w-[336px] rounded-xl bg-white p-5 text-center shadow">
