@@ -1,12 +1,8 @@
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-import {
-  ChevronRight,
-  LoaderIcon,
-  TrashIcon,
-} from "../assets/icons";
+import { ChevronRight, LoaderIcon, TrashIcon } from "../assets/icons";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Sidebar from "../components/Sidebar";
@@ -23,17 +19,36 @@ const TaskDetailsPage = () => {
 
   // states
   const [task, setTask] = useState();
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [saveIsLoading, setSaveIsLoading] = useState(false);
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
 
   // função para voltar para a página inicial
   const handleBackClick = () => {
     navigate(-1);
   };
 
+  // função para deletar tarefa
+  const handleDeleteClick = async () => {
+    setDeleteIsLoading(true);
+    // chama a api para deletar a tarefa
+    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      setDeleteIsLoading(false);
+      return toast.error(
+        "Erro ao deletar a tarefa! Por favor, tente novamente"
+      );
+    }
+    toast.success("Tarefa deletada com sucesso!");
+    navigate(-1);
+    setDeleteIsLoading(false);
+  };
+
   // função para alterar a tarefa quando o botão de salvar é clicado
   const handleSaveClick = async () => {
-    setIsLoading(true);
+    setSaveIsLoading(true);
     const newErrors = [];
     const title = titleRef.current.value;
     const description = descriptionRef.current.value;
@@ -54,7 +69,7 @@ const TaskDetailsPage = () => {
     setErrors(newErrors);
 
     if (newErrors.length > 0) {
-      return setIsLoading(false);
+      return setSaveIsLoading(false);
     }
 
     // chama a api para salvar a tarefa
@@ -66,12 +81,12 @@ const TaskDetailsPage = () => {
       }),
     });
     if (!response.ok) {
-      setIsLoading(false);
+      setSaveIsLoading(false);
       return toast.error("Erro ao salvar a tarefa! Por favor, tente novamente");
     }
     const newTask = await response.json();
     setTask(newTask);
-    setIsLoading(false);
+    setSaveIsLoading(false);
     toast.success("Tarefa salva com sucesso!");
   };
 
@@ -101,7 +116,7 @@ const TaskDetailsPage = () => {
         {/* barra do topo */}
         <div className="flex w-full justify-between">
           {/* parte da esquerda */}
-          <div>          
+          <div>
             <div className="flex items-center gap-1 text-xs">
               <Link className="cursor-pointer text-brand-text-gray" to="/">
                 Minhas Tarefas
@@ -114,8 +129,18 @@ const TaskDetailsPage = () => {
             <h1 className="mt-2 text-xl font-semibold">{task?.title}</h1>
           </div>
           {/* parte da direita */}
-          <Button className="h-fit self-end px-3 py-2" color="danger">
-            <TrashIcon /> Deletar tarefa
+          <Button
+            className="h-fit self-end px-3 py-2"
+            color="danger"
+            onClick={handleDeleteClick}
+            disabled={deleteIsLoading}
+          >
+            {deleteIsLoading ? (
+              <LoaderIcon className="animate-spin" />
+            ) : (
+              <TrashIcon />
+            )}
+            Deletar Tarefa
           </Button>
         </div>
         {/* dados da tarefa */}
@@ -127,7 +152,7 @@ const TaskDetailsPage = () => {
               defaultValue={task?.title}
               errorMessage={titleError?.message}
               ref={titleRef}
-              disabled={isLoading}
+              disabled={saveIsLoading}
             />
           </div>
           <div>
@@ -137,11 +162,11 @@ const TaskDetailsPage = () => {
               defaultValue={task?.description}
               errorMessage={descriptionError?.message}
               ref={descriptionRef}
-              disabled={isLoading}
+              disabled={saveIsLoading}
             />
           </div>
           <div>
-            <TimeSelect defaultValue={task?.time} disabled={isLoading} />
+            <TimeSelect defaultValue={task?.time} disabled={saveIsLoading} />
           </div>
         </div>
         {/* botões salvar e cancelar */}
@@ -153,9 +178,9 @@ const TaskDetailsPage = () => {
             size="large"
             color="primary"
             onClick={handleSaveClick}
-            disabled={isLoading}
+            disabled={saveIsLoading}
           >
-            {isLoading ? (
+            {saveIsLoading ? (
               <LoaderIcon className="animate-spin" />
             ) : (
               <p>Salvar</p>

@@ -50,7 +50,6 @@ Button.propTypes = {
   children: PropTypes.node.isRequired,
   color: PropTypes.oneOf(["primary", "ghost", "secondary", "danger"]),
   size: PropTypes.oneOf(["small", "large"]),
-  disabled: PropTypes.oneOf(["true"]),
   className: PropTypes.string,
 };
 
