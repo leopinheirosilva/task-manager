@@ -76,13 +76,13 @@ const Tasks = () => {
   const onSubmitTaskSuccess = (task) => {
     setTasks([...tasks, task]);
     toast.success("Tarefa adicionada com sucesso!");
-  }
+  };
 
   // função para fechar a janela de Nova Tarefa
   const handleDialogClose = () => {
     setaddTaskDialogIsOpen(false);
   };
- 
+
   return (
     <div className="w-full space-y-6 px-8 py-16">
       {/* cabeçalho e botões */}
@@ -104,7 +104,7 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={addTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
-            onSubmitSuccess={onSubmitTaskSuccess} 
+            onSubmitSuccess={onSubmitTaskSuccess}
           />
         </div>
       </div>
@@ -113,36 +113,51 @@ const Tasks = () => {
         <div className="space-y-3">
           {/* manhã */}
           <TasksSeparator title="manhã" icon={<SunIcon />} />
+          {morningTasks.length == 0 && (
+            <p className="text-sm text-brand-text-gray">
+              Nenhuma tarefa cadastrada para o período da manhã.
+            </p>
+          )}
           {morningTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
-              handleCheckboxClick={handleCheckboxClick} 
-              onDeleteSuccess={onDeleteTaskSuccess} 
+              handleCheckboxClick={handleCheckboxClick}
+              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>
         <div className="my-6 space-y-3">
           {/* tarde */}
           <TasksSeparator title="tarde" icon={<CloudSun />} />
+          {afternoonTasks.length == 0 && (
+            <p className="text-sm text-brand-text-gray">
+              Nenhuma tarefa cadastrada para o período da tarde.
+            </p>
+          )}
           {afternoonTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick}
-              onDeleteSuccess={onDeleteTaskSuccess} 
+              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>
         <div className="space-y-3">
           {/* noite */}
           <TasksSeparator title="noite" icon={<MoonIcon />} />
+          {nightTasks.length == 0 && (
+            <p className="text-sm text-brand-text-gray">
+              Nenhuma tarefa cadastrada para o período da noite.
+            </p>
+          )}
           {nightTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick}
-              onDeleteSuccess={onDeleteTaskSuccess} 
+              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>
