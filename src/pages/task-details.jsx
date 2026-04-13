@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -13,15 +14,31 @@ const TaskDetailsPage = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
 
-  // refs
-  const titleRef = useRef();
-  const descriptionRef = useRef();
+  // hook do react hook form
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    reset,
+  } = useForm();
 
   // states
   const [task, setTask] = useState();
-  const [errors, setErrors] = useState([]);
-  const [saveIsLoading, setSaveIsLoading] = useState(false);
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
+
+  // chamada da API
+  useEffect(() => {
+    const fetchTask = async () => {
+      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+        method: "GET",
+      });
+      const data = await response.json();
+      setTask(data);
+      reset(data);
+    };
+
+    fetchTask();
+  }, [taskId, reset]);
 
   // função para voltar para a página inicial
   const handleBackClick = () => {
@@ -47,67 +64,23 @@ const TaskDetailsPage = () => {
   };
 
   // função para alterar a tarefa quando o botão de salvar é clicado
-  const handleSaveClick = async () => {
-    setSaveIsLoading(true);
-    const newErrors = [];
-    const title = titleRef.current.value;
-    const description = descriptionRef.current.value;
-
-    // validação de campos do formulário
-    if (!title.trim()) {
-      newErrors.push({
-        inputField: "title",
-        message: "O título é obrigatório!",
-      });
-    }
-    if (!description.trim()) {
-      newErrors.push({
-        inputField: "description",
-        message: "A descrição é obrigatória!",
-      });
-    }
-    setErrors(newErrors);
-
-    if (newErrors.length > 0) {
-      return setSaveIsLoading(false);
-    }
-
-    // chama a api para salvar a tarefa
+  const handleSaveClick = async (data) => {
+    // chama a api para salvar a alteração
     const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
       method: "PATCH",
       body: JSON.stringify({
-        title,
-        description,
+        title: data.title.trim(),
+        description: data.description.trim(),
+        time: data.time,
       }),
     });
     if (!response.ok) {
-      setSaveIsLoading(false);
       return toast.error("Erro ao salvar a tarefa! Por favor, tente novamente");
     }
     const newTask = await response.json();
     setTask(newTask);
-    setSaveIsLoading(false);
     toast.success("Tarefa salva com sucesso!");
   };
-
-  // mensagens de erro
-  const titleError = errors.find((error) => error.inputField == "title");
-  const descriptionError = errors.find(
-    (error) => error.inputField == "description"
-  );
-
-  // chamada da API
-  useEffect(() => {
-    const fetchTask = async () => {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "GET",
-      });
-      const data = await response.json();
-      setTask(data);
-    };
-
-    fetchTask();
-  }, [taskId]);
 
   return (
     <div className="flex">
@@ -144,49 +117,70 @@ const TaskDetailsPage = () => {
           </Button>
         </div>
         {/* dados da tarefa */}
-        <div className="space-y-6 rounded-xl bg-brand-white p-6">
-          <div>
-            <Input
-              label="Título"
-              id="tilte"
-              defaultValue={task?.title}
-              errorMessage={titleError?.message}
-              ref={titleRef}
-              disabled={saveIsLoading}
-            />
+        <form onSubmit={handleSubmit(handleSaveClick)}>
+          <div className="space-y-6 rounded-xl bg-brand-white p-6">
+            <div>
+              <Input
+                label="Título"
+                id="title"
+                disabled={isSubmitting}
+                {...register("title", {
+                  required: "O título é obrigatório!",
+                  validate: (value) => {
+                    if (!value.trim()) {
+                      return "O campo deve ser preenchido!";
+                    }
+                    return true;
+                  },
+                })}
+                errorMessage={errors?.title?.message}
+              />
+            </div>
+            <div>
+              <Input
+                label="Descrição"
+                id="description"
+                disabled={isSubmitting}
+                {...register("description", {
+                  required: "A descrição é obrigatóira!",
+                  validate: (value) => {
+                    if (!value.trim()) {
+                      return "O campo deve ser preenchido!";
+                    }
+                    return true;
+                  },
+                })}
+                errorMessage={errors?.description?.message}
+              />
+            </div>
+            <div>
+              <TimeSelect disabled={isSubmitting} {...register("time")} />
+            </div>
           </div>
-          <div>
-            <Input
-              label="Descrição"
-              id="description"
-              defaultValue={task?.description}
-              errorMessage={descriptionError?.message}
-              ref={descriptionRef}
-              disabled={saveIsLoading}
-            />
+          {/* botões salvar e cancelar */}
+          <div className="mt-3 flex w-full justify-end gap-3">
+            <Button
+              size="large"
+              color="secondary"
+              onClick={handleBackClick}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              size="large"
+              color="primary"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <LoaderIcon className="animate-spin" />
+              ) : (
+                <p>Salvar</p>
+              )}
+            </Button>
           </div>
-          <div>
-            <TimeSelect defaultValue={task?.time} disabled={saveIsLoading} />
-          </div>
-        </div>
-        {/* botões salvar e cancelar */}
-        <div className="flex w-full justify-end gap-3">
-          <Button size="large" color="secondary" onClick={handleBackClick}>
-            Cancelar
-          </Button>
-          <Button
-            size="large"
-            color="primary"
-            onClick={handleSaveClick}
-            disabled={saveIsLoading}
-          >
-            {saveIsLoading ? (
-              <LoaderIcon className="animate-spin" />
-            ) : (
-              <p>Salvar</p>
-            )}
-          </Button>
-        </div>
+        </form>
       </div>
     </div>
   );
