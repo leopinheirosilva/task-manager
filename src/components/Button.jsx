@@ -24,7 +24,7 @@ const Button = ({
         small: "py-1 text-xs",
         large: "py-2 text-sm",
       },
-      // vairante para quando o botão está desabilitado (em processo de loading)
+      // variante para quando o botão está desabilitado (em processo de loading)
       disabled: {
         true: "cursor-not-allowed opacity-50 hover:opacity-50",
       },
