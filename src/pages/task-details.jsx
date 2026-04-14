@@ -48,7 +48,6 @@ const TaskDetailsPage = () => {
   // função para deletar tarefa
   const handleDeleteClick = async () => {
     setDeleteIsLoading(true);
-    // chama a api para deletar a tarefa
     const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
       method: "DELETE",
     });
@@ -65,7 +64,6 @@ const TaskDetailsPage = () => {
 
   // função para alterar a tarefa quando o botão de salvar é clicado
   const handleSaveClick = async (data) => {
-    // chama a api para salvar a alteração
     const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -86,7 +84,7 @@ const TaskDetailsPage = () => {
     <div className="flex">
       <Sidebar />
       <div className="w-full space-y-6 px-8 py-16">
-        {/* barra do topo */}
+        {/* cabeçalho */}
         <div className="flex w-full justify-between">
           {/* parte da esquerda */}
           <div>
@@ -101,7 +99,7 @@ const TaskDetailsPage = () => {
             </div>
             <h1 className="mt-2 text-xl font-semibold">{task?.title}</h1>
           </div>
-          {/* parte da direita */}
+          {/* botão de deletar tarefa */}
           <Button
             className="h-fit self-end px-3 py-2"
             color="danger"
@@ -116,13 +114,16 @@ const TaskDetailsPage = () => {
             Deletar Tarefa
           </Button>
         </div>
-        {/* dados da tarefa */}
+
+        {/* formulário */}
         <form onSubmit={handleSubmit(handleSaveClick)}>
           <div className="space-y-6 rounded-xl bg-brand-white p-6">
+            {/* input de título */}
             <div>
               <Input
                 label="Título"
                 id="title"
+                errorMessage={errors?.title?.message}
                 disabled={isSubmitting}
                 {...register("title", {
                   required: "O título é obrigatório!",
@@ -133,9 +134,9 @@ const TaskDetailsPage = () => {
                     return true;
                   },
                 })}
-                errorMessage={errors?.title?.message}
               />
             </div>
+            {/* input de descrição */}
             <div>
               <Input
                 label="Descrição"
@@ -153,10 +154,12 @@ const TaskDetailsPage = () => {
                 errorMessage={errors?.description?.message}
               />
             </div>
+            {/* input de horário */}
             <div>
               <TimeSelect disabled={isSubmitting} {...register("time")} />
             </div>
           </div>
+
           {/* botões salvar e cancelar */}
           <div className="mt-3 flex w-full justify-end gap-3">
             <Button
