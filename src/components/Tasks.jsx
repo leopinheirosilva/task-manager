@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -14,32 +15,26 @@ import TaskItem from "./TaskItem";
 import TasksSeparator from "./TasksSeparator";
 
 const Tasks = () => {
-  // states
-  const [tasks, setTasks] = useState([]);
-  const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
-
-  // chamada da API
-  useEffect(() => {
-    const fetchTasks = async () => {
-      // pegar os dados da API
+  // hooks do tanstack react query
+  const queryClient = useQueryClient();
+  const { data: tasks } = useQuery({
+    queryKey: "tasks",
+    queryFn: async () => {
+      // pega os dados da API
       const response = await fetch("http://localhost:3000/tasks", {
         method: "GET",
       });
       const tasks = await response.json();
-      // autaliza o state "tasks"
-      setTasks(tasks);
-    };
-    fetchTasks();
-  }, []);
+      return tasks;
+    },
+  });
 
-  // filtra todas as tarefas com o time igual à "morning"
-  const morningTasks = tasks.filter((task) => task.time == "morning");
+  const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
 
-  // filtra todas as tarefas com o time igual à "afternoon"
-  const afternoonTasks = tasks.filter((task) => task.time == "afternoon");
-
-  // filtra todas as tarefas com o time igual à "night"
-  const nightTasks = tasks.filter((task) => task.time == "night");
+  // filtra todas as tarefas com o time igual à "morning", "afternoon" e "night"
+  const morningTasks = tasks?.filter((task) => task.time == "morning");
+  const afternoonTasks = tasks?.filter((task) => task.time == "afternoon");
+  const nightTasks = tasks?.filter((task) => task.time == "night");
 
   // função para alterar o status da checkbox
   const handleCheckboxClick = (taskId) => {
@@ -47,9 +42,8 @@ const Tasks = () => {
       if (task.id != taskId) {
         return task;
       }
-      // lógica para atualizar o status da tarefa
       if (task.status == "not_started") {
-        toast.success("Tarefa iniciada!!"); // adiciona um toast da lib sonner
+        toast.success("Tarefa iniciada!!");
         return { ...task, status: "in_progress" };
       }
       if (task.status == "in_progress") {
@@ -62,19 +56,22 @@ const Tasks = () => {
       }
       return task;
     });
-    setTasks(newTasks);
+    queryClient.setQueryData("tasks", newTasks);
   };
 
-  // lógica para deleção de tarefas
-  const onDeleteTaskSuccess = (taskId) => {
-    const newTasks = tasks.filter((task) => task.id != taskId);
-    setTasks(newTasks);
+  // lógica para deletar tarefa
+  const onDeleteTaskSuccess = async (taskId) => {
+    queryClient.setQueryData("tasks", (currentTasks) => {
+      return currentTasks.filter((task) => task.id != taskId);
+    });
     toast.success("Tarefa removida com sucesso!");
   };
 
   // lógica para adicionar tarefa
-  const onSubmitTaskSuccess = (task) => {
-    setTasks([...tasks, task]);
+  const onSubmitTaskSuccess = async (task) => {
+    queryClient.setQueryData("tasks", (currentTasks) => {
+      return [...currentTasks, task];
+    });
     toast.success("Tarefa adicionada com sucesso!");
   };
 
@@ -113,12 +110,12 @@ const Tasks = () => {
         <div className="space-y-3">
           {/* manhã */}
           <TasksSeparator title="manhã" icon={<SunIcon />} />
-          {morningTasks.length == 0 && (
+          {morningTasks?.length == 0 && (
             <p className="text-sm text-brand-text-gray">
               Nenhuma tarefa cadastrada para o período da manhã.
             </p>
           )}
-          {morningTasks.map((task) => (
+          {morningTasks?.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
@@ -130,12 +127,12 @@ const Tasks = () => {
         <div className="my-6 space-y-3">
           {/* tarde */}
           <TasksSeparator title="tarde" icon={<CloudSun />} />
-          {afternoonTasks.length == 0 && (
+          {afternoonTasks?.length == 0 && (
             <p className="text-sm text-brand-text-gray">
               Nenhuma tarefa cadastrada para o período da tarde.
             </p>
           )}
-          {afternoonTasks.map((task) => (
+          {afternoonTasks?.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
@@ -147,12 +144,12 @@ const Tasks = () => {
         <div className="space-y-3">
           {/* noite */}
           <TasksSeparator title="noite" icon={<MoonIcon />} />
-          {nightTasks.length == 0 && (
+          {nightTasks?.length == 0 && (
             <p className="text-sm text-brand-text-gray">
               Nenhuma tarefa cadastrada para o período da noite.
             </p>
           )}
-          {nightTasks.map((task) => (
+          {nightTasks?.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
