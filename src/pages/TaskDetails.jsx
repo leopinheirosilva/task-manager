@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,67 +17,90 @@ const TaskDetailsPage = () => {
   // hook do react hook form
   const {
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     handleSubmit,
     reset,
   } = useForm();
 
-  // states
-  const [task, setTask] = useState();
-  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
-
-  // chamada da API
-  useEffect(() => {
-    const fetchTask = async () => {
+  // hooks do tanstack react query
+  const queryClient = useQueryClient();
+  const { data: task } = useQuery({
+    queryKey: ["task", taskId],
+    queryFn: async () => {
       const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
         method: "GET",
       });
       const data = await response.json();
-      setTask(data);
       reset(data);
-    };
+    },
+  });
+  const { mutate: updateTask, isPending: updateTaskisLoading } = useMutation({
+    mutationKey: ["updateTask", taskId],
+    mutationFn: async (data) => {
+      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          title: data.title.trim(),
+          description: data.description.trim(),
+          time: data.time,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error();
+      }
+      const updatedTask = await response.json();
+      queryClient.setQueryData("tasks", (currentTasks) => {
+        return currentTasks.map((currentTask) => {
+          if (currentTask.id === taskId) {
+            return updatedTask;
+          }
+          return currentTask;
+        });
+      });
+    },
+  });
+  const { mutate: deleteTask, isPending: deleteTaskisLoading } = useMutation({
+    mutationKey: ["deleteTask", taskId],
+    mutationFn: async () => {
+      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error();
+      }
+      const deletedTask = await response.json();
+      queryClient.setQueryData("tasks", (currentTasks) => {
+        return currentTasks.filter(
+          (currentTask) => currentTask.id === deletedTask.id
+        );
+      });
+    },
+  });
 
-    fetchTask();
-  }, [taskId, reset]);
-
-  // função para voltar para a página inicial
-  const handleBackClick = () => {
-    navigate(-1);
+  // função para alterar a tarefa quando o botão de salvar é clicado
+  const handleSaveClick = async (data) => {
+    updateTask(data, {
+      onSuccess: () => toast.success("Tarefa salva com sucesso!"),
+      onError: () =>
+        toast.error("Erro ao salvar a tarefa! Por favor, tente novamente"),
+    });
   };
 
   // função para deletar tarefa
   const handleDeleteClick = async () => {
-    setDeleteIsLoading(true);
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "DELETE",
+    deleteTask(undefined, {
+      onSuccess: () => {
+        toast.success("Tarefa deletada com sucesso!");
+        navigate(-1);
+      },
+      onError: () =>
+        toast.error("Erro ao deletar a tarefa! Por favor, tente novamente"),
     });
-    if (!response.ok) {
-      setDeleteIsLoading(false);
-      return toast.error(
-        "Erro ao deletar a tarefa! Por favor, tente novamente"
-      );
-    }
-    toast.success("Tarefa deletada com sucesso!");
-    navigate(-1);
-    setDeleteIsLoading(false);
   };
 
-  // função para alterar a tarefa quando o botão de salvar é clicado
-  const handleSaveClick = async (data) => {
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        title: data.title.trim(),
-        description: data.description.trim(),
-        time: data.time,
-      }),
-    });
-    if (!response.ok) {
-      return toast.error("Erro ao salvar a tarefa! Por favor, tente novamente");
-    }
-    const newTask = await response.json();
-    setTask(newTask);
-    toast.success("Tarefa salva com sucesso!");
+  // função para voltar para a página inicial
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
   return (
@@ -104,9 +127,9 @@ const TaskDetailsPage = () => {
             className="h-fit self-end px-3 py-2"
             color="danger"
             onClick={handleDeleteClick}
-            disabled={deleteIsLoading}
+            disabled={updateTaskisLoading || deleteTaskisLoading}
           >
-            {deleteIsLoading ? (
+            {deleteTaskisLoading ? (
               <LoaderIcon className="animate-spin" />
             ) : (
               <TrashIcon />
@@ -124,7 +147,7 @@ const TaskDetailsPage = () => {
                 label="Título"
                 id="title"
                 errorMessage={errors?.title?.message}
-                disabled={isSubmitting}
+                disabled={updateTaskisLoading || deleteTaskisLoading}
                 {...register("title", {
                   required: "O título é obrigatório!",
                   validate: (value) => {
@@ -141,7 +164,7 @@ const TaskDetailsPage = () => {
               <Input
                 label="Descrição"
                 id="description"
-                disabled={isSubmitting}
+                disabled={updateTaskisLoading || deleteTaskisLoading}
                 {...register("description", {
                   required: "A descrição é obrigatóira!",
                   validate: (value) => {
@@ -156,7 +179,10 @@ const TaskDetailsPage = () => {
             </div>
             {/* input de horário */}
             <div>
-              <TimeSelect disabled={isSubmitting} {...register("time")} />
+              <TimeSelect
+                disabled={updateTaskisLoading || deleteTaskisLoading}
+                {...register("time")}
+              />
             </div>
           </div>
 
@@ -166,7 +192,7 @@ const TaskDetailsPage = () => {
               size="large"
               color="secondary"
               onClick={handleBackClick}
-              disabled={isSubmitting}
+              disabled={updateTaskisLoading || deleteTaskisLoading}
             >
               Cancelar
             </Button>
@@ -174,9 +200,9 @@ const TaskDetailsPage = () => {
               size="large"
               color="primary"
               type="submit"
-              disabled={isSubmitting}
+              disabled={updateTaskisLoading || deleteTaskisLoading}
             >
-              {isSubmitting ? (
+              {updateTaskisLoading ? (
                 <LoaderIcon className="animate-spin" />
               ) : (
                 <p>Salvar</p>

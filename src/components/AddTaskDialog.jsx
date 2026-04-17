@@ -1,5 +1,6 @@
 import "./AddTaskDialog.css";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
@@ -13,7 +14,7 @@ import Button from "./Button";
 import Input from "./Input";
 import TimeSelect from "./TimeSelect";
 
-const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
+const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
   const nodeRef = useRef();
 
   // hook do react hook form
@@ -29,6 +30,22 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
       time: "morning",
     },
   });
+  
+  // hooks do tanstack react query
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: "addTask",
+    mutationFn: async (task) => {
+      const response = await fetch("http://localhost:3000/tasks", {
+        method: "POST",
+        body: JSON.stringify(task),
+      });
+      if (!response.ok) {
+        throw new Error();
+      }
+      return response.json();
+    },
+  });
 
   // função para adicionar tarefa quando o botão de salvar é clicado
   const handleSaveClick = async (data) => {
@@ -39,23 +56,23 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
       time: data.time,
       status: "not_started",
     };
-    const response = await fetch("http://localhost:3000/tasks", {
-      method: "POST",
-      body: JSON.stringify(task),
+    mutate(task, {
+      onSuccess: () => {
+        queryClient.setQueryData("tasks", (currentTasks) => {
+          return [...currentTasks, task];
+        });
+        toast.success("Tarefa adicionada com sucesso!");
+        handleDialogClose();
+        reset({
+          title: "",
+          description: "",
+          time: "morning",
+        });
+      },
+      onError: () => {
+        toast.error("Erro ao adicionar a tarefa! Por favor, tente novamente");
+      },
     });
-    if (!response.ok) {
-      return toast.error(
-        "Erro ao adicionar a tarefa! Por favor, tente novamente"
-      );
-    }
-    onSubmitSuccess(task);
-    handleDialogClose();
-    reset({
-      title: "",
-      description: "",
-      time: "morning",
-    });
-    toast.success("Tarefa criada com sucesso!");
   };
 
   return (
@@ -164,7 +181,6 @@ const AddTaskDialog = ({ isOpen, handleDialogClose, onSubmitSuccess }) => {
 AddTaskDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   handleDialogClose: PropTypes.func.isRequired,
-  onSubmitSuccess: PropTypes.func.isRequired,
 };
 
 export default AddTaskDialog;

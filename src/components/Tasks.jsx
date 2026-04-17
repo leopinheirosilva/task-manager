@@ -59,22 +59,6 @@ const Tasks = () => {
     queryClient.setQueryData("tasks", newTasks);
   };
 
-  // lógica para deletar tarefa
-  const onDeleteTaskSuccess = async (taskId) => {
-    queryClient.setQueryData("tasks", (currentTasks) => {
-      return currentTasks.filter((task) => task.id != taskId);
-    });
-    toast.success("Tarefa removida com sucesso!");
-  };
-
-  // lógica para adicionar tarefa
-  const onSubmitTaskSuccess = async (task) => {
-    queryClient.setQueryData("tasks", (currentTasks) => {
-      return [...currentTasks, task];
-    });
-    toast.success("Tarefa adicionada com sucesso!");
-  };
-
   // função para fechar a janela de Nova Tarefa
   const handleDialogClose = () => {
     setaddTaskDialogIsOpen(false);
@@ -101,7 +85,6 @@ const Tasks = () => {
           <AddTaskDialog
             isOpen={addTaskDialogIsOpen}
             handleDialogClose={handleDialogClose}
-            onSubmitSuccess={onSubmitTaskSuccess}
           />
         </div>
       </div>
@@ -120,7 +103,6 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick}
-              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>
@@ -137,7 +119,6 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick}
-              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>
@@ -154,7 +135,6 @@ const Tasks = () => {
               key={task.id}
               task={task}
               handleCheckboxClick={handleCheckboxClick}
-              onDeleteSuccess={onDeleteTaskSuccess}
             />
           ))}
         </div>

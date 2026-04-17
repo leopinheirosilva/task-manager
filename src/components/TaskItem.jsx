@@ -1,29 +1,39 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from "../assets/icons";
 import Button from "./Button";
 
-const TaskItem = ({ task, handleCheckboxClick, onDeleteSuccess }) => {
-  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
+const TaskItem = ({ task, handleCheckboxClick }) => {
+  // hooks do tanstack react query
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["deleteTask", task.id],
+    mutationFn: async () => {
+      const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+        method: "DELETE",
+      });
+      return response.json();
+    },
+  });
 
   // função para deletar tarefa
   const handleDeleteClick = async () => {
-    setDeleteIsLoading(true);
-    // chama a api para deletar a tarefa
-    const response = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-      method: "DELETE",
+    mutate(undefined, {
+      onSuccess: () => {
+        queryClient.setQueryData("tasks", (currentTasks) => {
+          return currentTasks.filter(
+            (currentTask) => currentTask.id != task.id
+          );
+        });
+        toast.success("Tarefa deletada com sucesso!");
+      },
+      onError: () => {
+        toast.error("Erro ao deletar tarefa! Por favor, tente novamente");
+      },
     });
-    if (!response.ok) {
-      setDeleteIsLoading(false);
-      return toast.error(
-        "Erro ao deletar a tarefa! Por favor, tente novamente"
-      );
-    }
-    onDeleteSuccess(task.id);
-    setDeleteIsLoading(false);
   };
 
   // variação de estilo segundo o status da tarefa
@@ -31,11 +41,9 @@ const TaskItem = ({ task, handleCheckboxClick, onDeleteSuccess }) => {
     if (task.status == "done") {
       return "bg-brand-primary text-brand-dark-blue";
     }
-
     if (task.status == "in_progress") {
       return "bg-brand-process text-brand-process";
     }
-
     if (task.status == "not_started") {
       return "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue";
     }
@@ -71,9 +79,9 @@ const TaskItem = ({ task, handleCheckboxClick, onDeleteSuccess }) => {
         <Button
           color="ghost"
           onClick={() => handleDeleteClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
-          disabled={deleteIsLoading}
+          disabled={isPending}
         >
-          {deleteIsLoading ? (
+          {isPending ? (
             <LoaderIcon className="animate-spin text-brand-text-gray" />
           ) : (
             <TrashIcon className="text-brand-text-gray" />
@@ -98,7 +106,6 @@ TaskItem.propTypes = {
     status: PropTypes.oneOf(["done", "in_progress", "not_started"]).isRequired,
   }),
   handleCheckboxClick: PropTypes.func.isRequired,
-  onDeleteSuccess: PropTypes.func.isRequired,
 };
 
 export default TaskItem;
