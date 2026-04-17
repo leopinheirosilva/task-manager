@@ -20,7 +20,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
   // hook do react hook form
   const {
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     handleSubmit,
     reset,
   } = useForm({
@@ -30,10 +30,10 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
       time: "morning",
     },
   });
-  
+
   // hooks do tanstack react query
   const queryClient = useQueryClient();
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: "addTask",
     mutationFn: async (task) => {
       const response = await fetch("http://localhost:3000/tasks", {
@@ -111,7 +111,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     label="Título"
                     id="tilte"
                     errorMessage={errors?.title?.message}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     {...register("title", {
                       required: "O título é obrigatório!",
                       validate: (value) => {
@@ -128,7 +128,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     label="Descrição"
                     id="description"
                     errorMessage={errors?.description?.message}
-                    disabled={isSubmitting}
+                    disabled={isPending}
                     {...register("description", {
                       required: "A descrição é obrigatóira!",
                       validate: (value) => {
@@ -140,7 +140,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     })}
                   />
                   {/* input de horário */}
-                  <TimeSelect disabled={isSubmitting} {...register("time")} />
+                  <TimeSelect disabled={isPending} {...register("time")} />
 
                   {/* botões salvar e cancelar */}
                   <div className="flex justify-center gap-3">
@@ -150,7 +150,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                       color="secondary"
                       type="button"
                       onClick={handleDialogClose}
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     >
                       Cancelar
                     </Button>
@@ -158,9 +158,9 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                       className="w-full"
                       size="large"
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isPending}
                     >
-                      {isSubmitting ? (
+                      {isPending ? (
                         <LoaderIcon className="animate-spin" />
                       ) : (
                         <p>Salvar</p>

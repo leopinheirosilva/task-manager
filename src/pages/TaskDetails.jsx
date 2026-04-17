@@ -34,7 +34,7 @@ const TaskDetailsPage = () => {
       reset(data);
     },
   });
-  const { mutate: updateTask, isPending: updateTaskisLoading } = useMutation({
+  const { mutate: updateTask, isPending: updateTaskisPending } = useMutation({
     mutationKey: ["updateTask", taskId],
     mutationFn: async (data) => {
       const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
@@ -59,7 +59,7 @@ const TaskDetailsPage = () => {
       });
     },
   });
-  const { mutate: deleteTask, isPending: deleteTaskisLoading } = useMutation({
+  const { mutate: deleteTask, isPending: deleteTaskisPending } = useMutation({
     mutationKey: ["deleteTask", taskId],
     mutationFn: async () => {
       const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
@@ -127,9 +127,9 @@ const TaskDetailsPage = () => {
             className="h-fit self-end px-3 py-2"
             color="danger"
             onClick={handleDeleteClick}
-            disabled={updateTaskisLoading || deleteTaskisLoading}
+            disabled={updateTaskisPending || deleteTaskisPending}
           >
-            {deleteTaskisLoading ? (
+            {deleteTaskisPending ? (
               <LoaderIcon className="animate-spin" />
             ) : (
               <TrashIcon />
@@ -147,7 +147,7 @@ const TaskDetailsPage = () => {
                 label="Título"
                 id="title"
                 errorMessage={errors?.title?.message}
-                disabled={updateTaskisLoading || deleteTaskisLoading}
+                disabled={updateTaskisPending || deleteTaskisPending}
                 {...register("title", {
                   required: "O título é obrigatório!",
                   validate: (value) => {
@@ -164,7 +164,7 @@ const TaskDetailsPage = () => {
               <Input
                 label="Descrição"
                 id="description"
-                disabled={updateTaskisLoading || deleteTaskisLoading}
+                disabled={updateTaskisPending || deleteTaskisPending}
                 {...register("description", {
                   required: "A descrição é obrigatóira!",
                   validate: (value) => {
@@ -180,7 +180,7 @@ const TaskDetailsPage = () => {
             {/* input de horário */}
             <div>
               <TimeSelect
-                disabled={updateTaskisLoading || deleteTaskisLoading}
+                disabled={updateTaskisPending || deleteTaskisPending}
                 {...register("time")}
               />
             </div>
@@ -192,7 +192,7 @@ const TaskDetailsPage = () => {
               size="large"
               color="secondary"
               onClick={handleBackClick}
-              disabled={updateTaskisLoading || deleteTaskisLoading}
+              disabled={updateTaskisPending || deleteTaskisPending}
             >
               Cancelar
             </Button>
@@ -200,9 +200,9 @@ const TaskDetailsPage = () => {
               size="large"
               color="primary"
               type="submit"
-              disabled={updateTaskisLoading || deleteTaskisLoading}
+              disabled={updateTaskisPending || deleteTaskisPending}
             >
-              {updateTaskisLoading ? (
+              {updateTaskisPending ? (
                 <LoaderIcon className="animate-spin" />
               ) : (
                 <p>Salvar</p>
