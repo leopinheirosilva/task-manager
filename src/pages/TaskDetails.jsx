@@ -1,4 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -8,6 +7,9 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import Sidebar from "../components/Sidebar";
 import TimeSelect from "../components/TimeSelect";
+import { useDeleteTask } from "../hooks/data/use-delete-task";
+import { useGetTask } from "../hooks/data/use-get-task";
+import { useUpdateTask } from "../hooks/data/use-update-task";
 
 const TaskDetailsPage = () => {
   // hooks do react router DOM
@@ -22,64 +24,19 @@ const TaskDetailsPage = () => {
     reset,
   } = useForm();
 
-  // hooks do tanstack react query
-  const queryClient = useQueryClient();
-  const { data: task } = useQuery({
-    queryKey: ["task", taskId],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "GET",
-      });
-      const data = await response.json();
-      reset(data);
-    },
-  });
-  const { mutate: updateTask, isPending: updateTaskisPending } = useMutation({
-    mutationKey: ["updateTask", taskId],
-    mutationFn: async (data) => {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          title: data.title.trim(),
-          description: data.description.trim(),
-          time: data.time,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error();
-      }
-      const updatedTask = await response.json();
-      queryClient.setQueryData("tasks", (currentTasks) => {
-        return currentTasks.map((currentTask) => {
-          if (currentTask.id === taskId) {
-            return updatedTask;
-          }
-          return currentTask;
-        });
-      });
-    },
-  });
-  const { mutate: deleteTask, isPending: deleteTaskisPending } = useMutation({
-    mutationKey: ["deleteTask", taskId],
-    mutationFn: async () => {
-      const response = await fetch(`http://localhost:3000/tasks/${taskId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error();
-      }
-      const deletedTask = await response.json();
-      queryClient.setQueryData("tasks", (currentTasks) => {
-        return currentTasks.filter(
-          (currentTask) => currentTask.id === deletedTask.id
-        );
-      });
-    },
+  // hooks para chamar a API
+  const { mutate: updateTask, isPending: updateTaskisPending } =
+    useUpdateTask(taskId);
+  const { mutate: deleteTask, isPending: deleteTaskisPending } =
+    useDeleteTask(taskId);
+  const { data: task } = useGetTask({
+    taskId,
+    onSuccess: reset,
   });
 
-  // função para alterar a tarefa quando o botão de salvar é clicado
-  const handleSaveClick = async (data) => {
-    updateTask(data, {
+  // função para alterar tarefa
+  const handleSaveClick = async (taskId) => {
+    updateTask(taskId, {
       onSuccess: () => toast.success("Tarefa salva com sucesso!"),
       onError: () =>
         toast.error("Erro ao salvar a tarefa! Por favor, tente novamente"),
@@ -109,7 +66,7 @@ const TaskDetailsPage = () => {
       <div className="w-full space-y-6 px-8 py-16">
         {/* cabeçalho */}
         <div className="flex w-full justify-between">
-          {/* parte da esquerda */}
+          {/* Título da tarefa */}
           <div>
             <div className="flex items-center gap-1 text-xs">
               <Link className="cursor-pointer text-brand-text-gray" to="/">

@@ -1,6 +1,5 @@
 import "./AddTaskDialog.css";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
@@ -10,13 +9,12 @@ import { toast } from "sonner";
 import { v4 } from "uuid";
 
 import { LoaderIcon } from "../assets/icons";
+import { useAddTask } from "../hooks/data/use-add-task";
 import Button from "./Button";
 import Input from "./Input";
 import TimeSelect from "./TimeSelect";
 
 const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
-  const nodeRef = useRef();
-
   // hook do react hook form
   const {
     register,
@@ -31,23 +29,10 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
     },
   });
 
-  // hooks do tanstack react query
-  const queryClient = useQueryClient();
-  const { mutate, isPending } = useMutation({
-    mutationKey: "addTask",
-    mutationFn: async (task) => {
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "POST",
-        body: JSON.stringify(task),
-      });
-      if (!response.ok) {
-        throw new Error();
-      }
-      return response.json();
-    },
-  });
+  // hook para chamar a API
+  const { mutate: addTask, isPending: addTaskisPending } = useAddTask();
 
-  // função para adicionar tarefa quando o botão de salvar é clicado
+  // função para adicionar tarefa
   const handleSaveClick = async (data) => {
     const task = {
       id: v4(),
@@ -56,11 +41,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
       time: data.time,
       status: "not_started",
     };
-    mutate(task, {
+    addTask(task, {
       onSuccess: () => {
-        queryClient.setQueryData("tasks", (currentTasks) => {
-          return [...currentTasks, task];
-        });
         toast.success("Tarefa adicionada com sucesso!");
         handleDialogClose();
         reset({
@@ -74,6 +56,8 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
       },
     });
   };
+
+  const nodeRef = useRef();
 
   return (
     <div>
@@ -111,7 +95,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     label="Título"
                     id="tilte"
                     errorMessage={errors?.title?.message}
-                    disabled={isPending}
+                    disabled={addTaskisPending}
                     {...register("title", {
                       required: "O título é obrigatório!",
                       validate: (value) => {
@@ -128,7 +112,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     label="Descrição"
                     id="description"
                     errorMessage={errors?.description?.message}
-                    disabled={isPending}
+                    disabled={addTaskisPending}
                     {...register("description", {
                       required: "A descrição é obrigatóira!",
                       validate: (value) => {
@@ -140,7 +124,10 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                     })}
                   />
                   {/* input de horário */}
-                  <TimeSelect disabled={isPending} {...register("time")} />
+                  <TimeSelect
+                    disabled={addTaskisPending}
+                    {...register("time")}
+                  />
 
                   {/* botões salvar e cancelar */}
                   <div className="flex justify-center gap-3">
@@ -150,7 +137,7 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                       color="secondary"
                       type="button"
                       onClick={handleDialogClose}
-                      disabled={isPending}
+                      disabled={addTaskisPending}
                     >
                       Cancelar
                     </Button>
@@ -158,9 +145,9 @@ const AddTaskDialog = ({ isOpen, handleDialogClose }) => {
                       className="w-full"
                       size="large"
                       type="submit"
-                      disabled={isPending}
+                      disabled={addTaskisPending}
                     >
-                      {isPending ? (
+                      {addTaskisPending ? (
                         <LoaderIcon className="animate-spin" />
                       ) : (
                         <p>Salvar</p>

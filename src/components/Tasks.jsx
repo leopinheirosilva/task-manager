@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -9,25 +9,18 @@ import {
   SunIcon,
   TrashIcon,
 } from "../assets/icons";
+import { useGetTasks } from "../hooks/data/use-get-tasks";
 import AddTaskDialog from "./AddTaskDialog";
 import Button from "./Button";
 import TaskItem from "./TaskItem";
 import TasksSeparator from "./TasksSeparator";
 
 const Tasks = () => {
-  // hooks do tanstack react query
+  // hook do tanstack query
   const queryClient = useQueryClient();
-  const { data: tasks } = useQuery({
-    queryKey: "tasks",
-    queryFn: async () => {
-      // pega os dados da API
-      const response = await fetch("http://localhost:3000/tasks", {
-        method: "GET",
-      });
-      const tasks = await response.json();
-      return tasks;
-    },
-  });
+
+  // hook para chamar a API
+  const { data: tasks } = useGetTasks();
 
   const [addTaskDialogIsOpen, setaddTaskDialogIsOpen] = useState(false);
 

@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import App from "./App.jsx";
 import TaskDetailsPage from "./pages/TaskDetails.jsx";
 
+// tanstack query
 const queryClient = new QueryClient()
 
 // react router DOM
