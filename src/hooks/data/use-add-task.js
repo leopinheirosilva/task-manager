@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { taskQueryKeys } from "../../keys/queries";
 import { api } from "../../lib/axios";
 
 export const useAddTask = () => {
@@ -12,7 +13,7 @@ export const useAddTask = () => {
       return createdTask;
     },
     onSuccess: (createdTask) => {
-      queryClient.setQueryData("tasks", (currentTasks) => {
+      queryClient.setQueryData(taskQueryKeys.getAll(), (currentTasks) => {
         return [...currentTasks, createdTask];
       });
     },
