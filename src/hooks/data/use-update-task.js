@@ -12,18 +12,15 @@ export const useUpdateTask = (taskId) => {
         description: data.description.trim(),
         time: data.time,
       });
-
-      return updatedTask;
-    },
-    onSuccess: (updatedTask) => {
       queryClient.setQueryData("tasks", (currentTasks) => {
-        return currentTasks.map((currentTask) => {
-          if (currentTask.id === taskId) {
+        return currentTasks.map((task) => {
+          if (task.id === taskId) {
             return updatedTask;
           }
-          return currentTask;
+          return task;
         });
       });
+      queryClient.setQueryData(["task", taskId], updatedTask);
     },
   });
 };
