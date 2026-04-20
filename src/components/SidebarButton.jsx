@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
+import { NavLink } from "react-router-dom";
 import { tv } from "tailwind-variants";
 
-const SidebarButton = ({ children, color, href }) => {
+const SidebarButton = ({ children, to }) => {
   // criação de variantes de estilos para os botões
   const sidebar = tv({
     base: "flex items-center gap-2 rounded-lg px-6 py-3",
@@ -14,15 +15,20 @@ const SidebarButton = ({ children, color, href }) => {
   });
 
   return (
-    <a href={href} className={sidebar({ color })}>
+    <NavLink
+      to={to}
+      className={
+        ({ isActive }) => sidebar({ color: isActive ? "selected" : "default" }) //define a cor do botão quando ele estiver selecionado e quando ele não estiver selecionado
+      }
+    >
       {children}
-    </a>
+    </NavLink>
   );
 };
 
 SidebarButton.propTypes = {
   children: PropTypes.node.isRequired,
-  color: PropTypes.oneOf(["default","selected"]),
+  color: PropTypes.oneOf(["default", "selected"]),
 };
 
 export default SidebarButton;
