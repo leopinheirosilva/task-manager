@@ -19,7 +19,7 @@
       "title": "Fazer compras",
       "description": "Comprar os ingredientes para o jantar",
       "time": "night",
-      "status": "in_progress"
+      "status": "not_started"
     },
     {
       "id": "5",
@@ -34,13 +34,6 @@
       "description": "Meditar por 10 minutos",
       "time": "night",
       "status": "not_started"
-    },
-    {
-      "id": "ab33ab3a-4f68-4e95-9336-d04409c4c3c5",
-      "title": "tes",
-      "description": "test",
-      "time": "morning",
-      "status": "done"
     }
   ]
 }
