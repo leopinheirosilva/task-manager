@@ -4,23 +4,16 @@ import { toast } from "sonner";
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from "../assets/icons";
 import { useDeleteTask } from "../hooks/data/use-delete-task";
+import { useUpdateTask } from "../hooks/data/use-update-task";
 import Button from "./Button";
 
-const TaskItem = ({ task, handleCheckboxClick }) => {
-  // hook para chamar a API
-  const { mutate: deleteTask, isPending: deleteTaskisPending } = useDeleteTask(task.id);
-
-  // função para deletar tarefa
-  const handleDeleteClick = async () => {
-    deleteTask(undefined, {
-      onSuccess: () => {
-        toast.success("Tarefa deletada com sucesso!");
-      },
-      onError: () => {
-        toast.error("Erro ao deletar tarefa! Por favor, tente novamente");
-      },
-    });
-  };
+const TaskItem = ({ task }) => {
+  // hooks para chamar a API
+  const { mutate: deleteTask, isPending: deleteTaskisPending } = useDeleteTask(
+    task.id
+  );
+  const { mutate: updateTask, isPending: updateStatusisPending } =
+    useUpdateTask(task.id);
 
   // variação de estilo segundo o status da tarefa
   const getStatusClasses = () => {
@@ -33,6 +26,46 @@ const TaskItem = ({ task, handleCheckboxClick }) => {
     if (task.status == "not_started") {
       return "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue";
     }
+  };
+
+  // lógica para atualizar o status da tarefa
+  const getNewStatus = () => {
+    if (task.status == "done") {
+      return "not_started";
+    }
+    if (task.status == "in_progress") {
+      return "done";
+    }
+    if (task.status == "not_started") {
+      return "in_progress";
+    }
+  };
+
+  // função para atualizar o status da tarefa
+  const handleCheckboxClick = () => {
+    updateTask(
+      { status: getNewStatus() },
+      {
+        onSuccess: () => {
+          toast.success("Status da tarefa atualizado com sucesso!");
+        },
+        onError: () => {
+          toast.error("Erro ao atualizar o status da tarefa!");
+        },
+      }
+    );
+  };
+
+  // função para deletar tarefa
+  const handleDeleteClick = async () => {
+    deleteTask(undefined, {
+      onSuccess: () => {
+        toast.success("Tarefa deletada com sucesso!");
+      },
+      onError: () => {
+        toast.error("Erro ao deletar tarefa! Por favor, tente novamente");
+      },
+    });
   };
 
   return (
@@ -48,7 +81,8 @@ const TaskItem = ({ task, handleCheckboxClick }) => {
             className="absolute h-full cursor-pointer opacity-0"
             type="checkbox"
             checked={task.status == "done"}
-            onChange={() => handleCheckboxClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
+            onChange={handleCheckboxClick}
+            disabled={updateStatusisPending}
           />
           {task.status == "done" && <CheckIcon />}
           {task.status == "in_progress" && (
@@ -64,8 +98,8 @@ const TaskItem = ({ task, handleCheckboxClick }) => {
         {/* botão para remover tarefa */}
         <Button
           color="ghost"
-          onClick={() => handleDeleteClick(task.id)} // sintaxe para chamar uma função recebida como prop, que irá receber um parametro
-          disabled={deleteTaskisPending}
+          onClick={handleDeleteClick}
+          disabled={deleteTaskisPending || updateStatusisPending}
         >
           {deleteTaskisPending ? (
             <LoaderIcon className="animate-spin text-brand-text-gray" />
