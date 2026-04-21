@@ -6,7 +6,7 @@ const DashboardCards = () => {
   // hook para chamar a API
   const { data: tasks } = useGetTasks();
 
-  // filtra as tarefas em andamento e as tarefas concluídas
+  // filtra as tarefas em andamento, as tarefas não iniciadas e as tarefas concluídas
   const doneTasks = tasks?.filter((task) => task.status == "done").length;
   const inProgressTask = tasks?.filter(
     (task) => task.status == "in_progress"
