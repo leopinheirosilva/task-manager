@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { tv } from "tailwind-variants";
 
 import { CheckIcon, DetailsIcon, LoaderIcon, TrashIcon } from "../assets/icons";
 import { useDeleteTask } from "../hooks/data/use-delete-task";
@@ -14,19 +15,6 @@ const TaskItem = ({ task }) => {
   );
   const { mutate: updateTask, isPending: updateStatusisPending } =
     useUpdateTask(task.id);
-
-  // variação de estilo segundo o status da tarefa
-  const getStatusClasses = () => {
-    if (task.status == "done") {
-      return "bg-brand-primary text-brand-dark-blue";
-    }
-    if (task.status == "in_progress") {
-      return "bg-brand-process text-brand-process";
-    }
-    if (task.status == "not_started") {
-      return "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue";
-    }
-  };
 
   // lógica para atualizar o status da tarefa
   const getNewStatus = () => {
@@ -68,14 +56,26 @@ const TaskItem = ({ task }) => {
     });
   };
 
+  // variação de estilo segundo o status da tarefa
+  const statusClasses = tv({
+    base: "text-sm",
+    variants: {
+      color: {
+        done: "bg-brand-primary text-brand-dark-blue",
+        in_progress: "bg-brand-process text-brand-process",
+        not_started: "bg-brand-dark-blue bg-opacity-5 text-brand-dark-blue",
+      },
+    },
+  });
+
   return (
     <div
-      className={`bg-op flex justify-between gap-2 rounded-lg bg-opacity-10 px-4 py-3 text-sm transition ${getStatusClasses()}`}
+      className={`bg-op flex justify-between gap-2 rounded-lg bg-opacity-10 px-4 py-3 text-sm transition ${statusClasses({ color: task.status })}`}
     >
       <div className="flex items-center gap-2">
         {/* checkbox */}
         <label
-          className={`relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-opacity-100 ${getStatusClasses()}`}
+          className={`relative flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg ${statusClasses({ color: task.status })}`}
         >
           <input
             className="absolute h-full cursor-pointer opacity-0"
@@ -125,7 +125,6 @@ TaskItem.propTypes = {
     time: PropTypes.oneOf(["morning", "afternoon", "night"]).isRequired,
     status: PropTypes.oneOf(["done", "in_progress", "not_started"]).isRequired,
   }),
-  handleCheckboxClick: PropTypes.func.isRequired,
 };
 
 export default TaskItem;
