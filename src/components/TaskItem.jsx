@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { tv } from "tailwind-variants";
@@ -9,6 +10,9 @@ import { useUpdateTask } from "../hooks/data/use-update-task";
 import Button from "./Button";
 
 const TaskItem = ({ task }) => {
+  // ref para guardar o ID do toast de loading
+  const toastIdRef = useRef(null);
+
   // hooks para chamar a API
   const { mutate: deleteTask, isPending: deleteTaskisPending } = useDeleteTask(
     task.id
@@ -31,13 +35,20 @@ const TaskItem = ({ task }) => {
 
   // função para atualizar o status da tarefa
   const handleCheckboxClick = () => {
+    // Mostrar toast de loading
+    toastIdRef.current = toast.loading("Atualizando status da tarefa...");
+
     updateTask(
       { status: getNewStatus() },
       {
         onSuccess: () => {
+          // Fechar o loading toast
+          toast.dismiss(toastIdRef.current);
           toast.success("Status da tarefa atualizado com sucesso!");
         },
         onError: () => {
+          // Fechar o loading toast
+          toast.dismiss(toastIdRef.current);
           toast.error("Erro ao atualizar o status da tarefa!");
         },
       }
@@ -82,7 +93,7 @@ const TaskItem = ({ task }) => {
             type="checkbox"
             checked={task.status == "done"}
             onChange={handleCheckboxClick}
-            disabled={updateStatusisPending}
+            disabled={deleteTaskisPending || updateStatusisPending}
           />
           {task.status == "done" && <CheckIcon />}
           {task.status == "in_progress" && (
@@ -109,9 +120,15 @@ const TaskItem = ({ task }) => {
         </Button>
 
         {/* botão ver detalhes */}
-        <Link to={`/task/${task.id}`}>
-          <DetailsIcon />
-        </Link>
+        {deleteTaskisPending || updateStatusisPending ? (
+          <div className="cursor-not-allowed opacity-50">
+            <DetailsIcon />
+          </div>
+        ) : (
+          <Link to={`/task/${task.id}`}>
+            <DetailsIcon />
+          </Link>
+        )}
       </div>
     </div>
   );

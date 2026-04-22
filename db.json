@@ -24,16 +24,9 @@
     {
       "id": "5",
       "title": "Descansar",
-      "description": "Assistir um filme com a família",
+      "description": "Assistir um filme ou série com a família",
       "time": "night",
-      "status": "not_started"
-    },
-    {
-      "id": "6",
-      "title": "Meditar",
-      "description": "Meditar por 10 minutos",
-      "time": "morning",
-      "status": "not_started"
+      "status": "in_progress"
     }
   ]
 }
