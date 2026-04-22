@@ -37,9 +37,12 @@ const TaskDetailsPage = () => {
   // função para alterar tarefa
   const handleSaveClick = async (taskId) => {
     updateTask(taskId, {
-      onSuccess: () => toast.success("Tarefa salva com sucesso!"),
+      onSuccess: () => {
+        toast.success("Tarefa alterada com sucesso!");
+        navigate(-1);
+      },
       onError: () =>
-        toast.error("Erro ao salvar a tarefa! Por favor, tente novamente"),
+        toast.error("Erro ao alterar a tarefa! Por favor, tente novamente"),
     });
   };
 
