@@ -1,32 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "1",
-      "title": "Estudar FSC",
-      "description": "Estudar para a prova de FSC",
-      "time": "morning",
-      "status": "done"
-    },
-    {
-      "id": "3",
-      "title": "Treinar",
-      "description": "Treinar para a competição de natação",
-      "time": "afternoon",
-      "status": "in_progress"
-    },
-    {
-      "id": "4",
-      "title": "Fazer compras",
-      "description": "Comprar os ingredientes para o jantar",
-      "time": "night",
-      "status": "not_started"
-    },
-    {
-      "id": "5",
-      "title": "Descansar",
-      "description": "Assistir um filme ou série com a família",
-      "time": "night",
-      "status": "in_progress"
-    }
-  ]
+  "tasks": []
 }
