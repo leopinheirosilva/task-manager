@@ -1,3 +1,39 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": "14f399cb-969e-4ee8-8eab-b28ede311845",
+      "title": "Estudar FSC",
+      "description": "Estudar para a prova de FSC",
+      "time": "morning",
+      "status": "done"
+    },
+    {
+      "id": "ebff0b1c-a4ad-4159-8283-be59e79062a0",
+      "title": "Treinar",
+      "description": "Treinar para a competição de natação",
+      "time": "afternoon",
+      "status": "in_progress"
+    },
+    {
+      "id": "f8808579-ee23-415d-9751-981082a04a62",
+      "title": "Fazer compras",
+      "description": "Comprar os ingredientes para o jantar",
+      "time": "afternoon",
+      "status": "not_started"
+    },
+    {
+      "id": "f88f5479-351e-4c12-8965-0363f8359ce3",
+      "title": "Descansar",
+      "description": "Assistir um filme ou séire com a família",
+      "time": "night",
+      "status": "not_started"
+    },
+    {
+      "id": "e49d63c6-e37b-4444-b50d-ab28bde31f5d",
+      "title": "Meditar",
+      "description": "Meditar durante 1 hora",
+      "time": "morning",
+      "status": "done"
+    }
+  ]
 }
