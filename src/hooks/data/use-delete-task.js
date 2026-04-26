@@ -12,10 +12,10 @@ export const useDeleteTask = (taskId) => {
       const { data: deletedTask } = await api.delete(`/tasks/${taskId}`);
       return deletedTask;
     },
-    onSuccess: (deletedTask) => {
+    onSuccess: () => {
       queryClient.setQueryData(taskQueryKeys.getAll(), (currentTasks) => {
         return currentTasks.filter(
-          (currentTask) => currentTask.id != deletedTask.id
+          (currentTask) => currentTask.id != taskId
         );
       });
     },
